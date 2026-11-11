@@ -1,0 +1,39 @@
+{
+  "topic": "Soccer",
+  "title": "Soccer Judges",
+  "intro": "Got a hot take about a player, a team or a tactic? Type it in. Three judges score it out of ten, tell you why, and then the panel gives its verdict.",
+  "submission": "an opinion about soccer: a player, a team, a tactic or a big decision",
+  "shape": "chosen",
+  "placeholder": "Palmer should start ahead of Foden, because...",
+  "tip": "Give a reason or two. The judges like reasons.",
+  "verdict": "average",
+  "judges": [
+    {
+      "name": "The Pundit",
+      "character": "A loud television pundit. Cares whether a claim is bold and whether it is actually backed up.",
+      "rubric": {
+        "9": "a clear claim with two or more specific reasons",
+        "5": "a fair opinion resting on one thin reason",
+        "2": "a claim with no reasoning, or one that contradicts itself"
+      }
+    },
+    {
+      "name": "The Analyst",
+      "character": "Dry and stats minded. Cares whether the facts used are real and used correctly.",
+      "rubric": {
+        "9": "uses specific checkable facts, correctly",
+        "5": "gestures at form or recent results without specifics",
+        "2": "states things that are wrong or invented"
+      }
+    },
+    {
+      "name": "The Supporter",
+      "character": "In the stands, heart on sleeve. Cares whether this would win an argument with a rival fan.",
+      "rubric": {
+        "9": "confident, memorable, would hold up in an argument",
+        "5": "reasonable but forgettable",
+        "2": "hedged so heavily it says nothing"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "topic": "Inventions",
+  "title": "Invention Judges",
+  "intro": "Dreamed up something that should exist? Type it in. Three judges score it out of ten, tell you why, and then the panel gives its verdict.",
+  "submission": "an invention they have made up: what it is, what it does, and who it is for",
+  "shape": "made up",
+  "placeholder": "A backpack that weighs itself and...",
+  "tip": "Say what it does and who it is for. The judges want to picture it.",
+  "verdict": "average",
+  "judges": [
+    {
+      "name": "The Engineer",
+      "character": "Practical and unexcitable. Cares whether the thing could actually be built.",
+      "rubric": {
+        "9": "realistic, and names the parts it would need",
+        "5": "plausible but vague about how it works",
+        "2": "needs something that does not exist"
+      }
+    },
+    {
+      "name": "The Investor",
+      "character": "Impatient. Cares whether anybody actually needs this.",
+      "rubric": {
+        "9": "names a real problem and the people who have it",
+        "5": "useful to somebody, but unclear who",
+        "2": "solves nothing anyone was worried about"
+      }
+    },
+    {
+      "name": "The Ten Year Old",
+      "character": "Honest to a fault. Cares whether it is cool.",
+      "rubric": {
+        "9": "wants one immediately",
+        "5": "shrugs, says it is fine",
+        "2": "bored before the end of the sentence"
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "config": "config.inventions.json",
+  "tests": [
+    {
+      "submission": "A water bottle that tells you when you have not drunk anything for two hours, using a sensor in the cap.",
+      "expect": "middle to high",
+      "verdict": [
+        6,
+        8
+      ]
+    },
+    {
+      "submission": "A machine that reads your mind so you never have to type.",
+      "expect": "the judges disagree: low from The Engineer, high from The Ten Year Old. This one is meant to split the panel.",
+      "judges": {
+        "The Engineer": [
+          1,
+          3
+        ],
+        "The Ten Year Old": [
+          7,
+          9
+        ]
+      }
+    },
+    {
+      "submission": "An umbrella.",
+      "expect": "low",
+      "verdict": [
+        1,
+        3
+      ]
+    },
+    {
+      "submission": "A backpack that weighs itself and warns you before it hurts your back, for school kids carrying too many books.",
+      "expect": "high",
+      "verdict": [
+        7,
+        9
+      ]
+    },
+    {
+      "submission": "A thing for stuff.",
+      "expect": "low, or the panel asks for more. This tests whether the panel asks for more rather than inventing a score.",
+      "verdict": [
+        1,
+        2
+      ],
+      "moreIsFine": true
+    }
+  ]
+}

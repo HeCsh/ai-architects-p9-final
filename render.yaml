@@ -1,0 +1,22 @@
+# Instructions for Render, the website host, so it can put the judges online.
+#
+# Render reads this file when you choose New > Blueprint and pick this repo.
+# It sets everything up except the key, which it asks you to paste in. The
+# key is never written in this file, because this file is public.
+services:
+  - type: web
+    name: ai-architects-judges
+    runtime: node
+    plan: free
+    # Nothing to install or build. The project only uses what comes with Node.js.
+    buildCommand: node --version
+    startCommand: node scripts/server.mjs
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false   # Render asks you for this when you set it up
+      - key: NODE_VERSION
+        value: "22"
+      # Which topic the live site runs. Change it to config.musicals.json
+      # or config.inventions.json in Render's Environment settings.
+      - key: CONFIG_PATH
+        value: config.json

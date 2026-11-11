@@ -1,0 +1,39 @@
+{
+  "topic": "Musicals",
+  "title": "Musical Judges",
+  "intro": "Got a big call about a musical? Who to cast, which song is best, how to stage a moment. Type it in. Three judges score it out of ten, tell you why, and then the panel gives its verdict.",
+  "submission": "a choice about a musical: who to cast, which song is best, or how to stage a moment, and why",
+  "shape": "chosen",
+  "placeholder": "Defying Gravity is the best song because...",
+  "tip": "Say why. The judges want to know what your choice does for the show.",
+  "verdict": "average",
+  "judges": [
+    {
+      "name": "The Director",
+      "character": "Thinks about the show as a whole. Cares whether the choice serves the story.",
+      "rubric": {
+        "9": "shows how the choice changes what the audience feels at that moment",
+        "5": "defensible, with a general reason",
+        "2": "ignores the story completely"
+      }
+    },
+    {
+      "name": "The Critic",
+      "character": "Precise and a little cold. Cares about craft and detail.",
+      "rubric": {
+        "9": "names particular moments, songs, or what the part demands of a singer",
+        "5": "talks in generalities",
+        "2": "praise with nothing specific underneath it"
+      }
+    },
+    {
+      "name": "The Superfan",
+      "character": "Has seen it eleven times. Cares whether this is a take worth arguing about.",
+      "rubric": {
+        "9": "a bold choice defended with real knowledge of the show",
+        "5": "safe and predictable",
+        "2": "no enthusiasm, or clearly does not know the show"
+      }
+    }
+  ]
+}

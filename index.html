@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Judges</title>
+  <meta name="description" content="Type something in and a panel of AI judges scores it out of ten">
+  <meta name="theme-color" content="#38bdf8">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Outfit', 'sans-serif'],
+            body: ['"Plus Jakarta Sans"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, .font-display {
+      font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-8">
+      <a href="#" class="flex items-center gap-2.5 text-slate-900 shrink-0">
+        <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center text-white shadow-sm shadow-sky-500/20 font-display font-extrabold">10</span>
+        <span class="font-display font-bold text-xl tracking-tight text-slate-900 whitespace-nowrap" id="brand-title">Judges</span>
+      </a>
+    </div>
+  </header>
+
+  <section class="bg-gradient-to-b from-sky-100/70 via-indigo-50/40 to-slate-50 border-b border-slate-200/80 pt-10 pb-8 px-4 sm:px-6">
+    <div class="max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 text-xs font-bold text-sky-700 uppercase tracking-wider mb-2">
+        <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+        <span>The panel is in</span>
+      </div>
+      <!-- Every word in this part comes from config.json. The page itself
+           does not know what topic it is about, so the same page works for
+           any topic. -->
+      <h1 id="title" class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        Judges
+      </h1>
+      <p id="intro" class="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl">
+        Type it in. The judges score it out of ten, tell you why, and then the panel gives its verdict.
+      </p>
+
+      <!-- The box. What gets typed here is sent to the server, never
+           straight to the AI, because only the server has the key. -->
+      <div class="mt-8 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm">
+        <label for="submission" class="block text-sm font-bold text-slate-800 mb-2">
+          Send in <span id="submission-label">something to judge</span>
+        </label>
+        <textarea id="submission" rows="4"
+          placeholder=""
+          class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm sm:text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all"></textarea>
+        <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p id="tip" class="text-xs text-slate-500">Give a reason or two. The judges like reasons.</p>
+          <button id="send" type="button"
+            class="px-5 py-2.5 rounded-xl text-sm font-bold bg-sky-600 text-white hover:bg-sky-700 disabled:opacity-60 disabled:cursor-wait shadow-sm transition-all whitespace-nowrap">
+            Ask the panel
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8">
+
+    <!-- One card per judge, side by side, so you can see at a glance
+         where they agree and where they do not. Filled in by the code below. -->
+    <div id="result" class="hidden">
+      <div id="cards" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+
+      <!-- The verdict sits underneath, because it comes from the scores above. -->
+      <section id="verdict" class="mt-6 rounded-2xl p-6 bg-gradient-to-tr from-sky-600 to-indigo-600 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="text-xs font-bold uppercase tracking-wider text-white/80"><span id="verdict-label">The verdict</span> <span id="verdict-method" class="ml-1 px-2 py-0.5 rounded-md bg-white/15 normal-case tracking-normal"></span></div>
+          <p id="verdict-why" class="mt-2 text-sm sm:text-base text-white/90 leading-relaxed"></p>
+        </div>
+        <div class="font-display text-5xl font-extrabold tabular-nums leading-none shrink-0"><span id="verdict-score"></span><span id="verdict-out-of" class="text-xl text-white/70">/10</span></div>
+      </section>
+    </div>
+
+    <!-- Thinking. AI answers take a few seconds, and a page that does
+         nothing for that long looks broken. -->
+    <div id="thinking" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm animate-pulse flex flex-col gap-4"><div class="h-5 bg-slate-200 rounded w-1/2"></div><div class="h-10 bg-slate-100 rounded w-1/3"></div><div class="h-16 bg-slate-100 rounded w-full"></div></div>
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm animate-pulse flex flex-col gap-4"><div class="h-5 bg-slate-200 rounded w-1/2"></div><div class="h-10 bg-slate-100 rounded w-1/3"></div><div class="h-16 bg-slate-100 rounded w-full"></div></div>
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm animate-pulse flex flex-col gap-4"><div class="h-5 bg-slate-200 rounded w-1/2"></div><div class="h-10 bg-slate-100 rounded w-1/3"></div><div class="h-16 bg-slate-100 rounded w-full"></div></div>
+    </div>
+
+    <div id="error-container" class="hidden p-6 bg-amber-50 border border-amber-200 rounded-2xl text-center max-w-lg mx-auto">
+      <h3 class="text-base font-bold text-slate-800">The panel could not answer</h3>
+      <p id="error-message" class="text-sm text-slate-600 mt-1"></p>
+    </div>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 mt-12 py-8 px-4 sm:px-6">
+    <div class="max-w-4xl mx-auto text-xs text-slate-500">
+      <span id="footer-title">Judges</span> · An AI Architects project
+    </div>
+  </footer>
+
+  <script>
+    const box = document.getElementById('submission');
+    const sendBtn = document.getElementById('send');
+    const resultEl = document.getElementById('result');
+    const thinkingEl = document.getElementById('thinking');
+    const errorEl = document.getElementById('error-container');
+    const errorMessage = document.getElementById('error-message');
+
+    function show(which) {
+      for (const el of [resultEl, thinkingEl, errorEl]) el.classList.add('hidden');
+      if (which) which.classList.remove('hidden');
+    }
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      show(errorEl);
+    }
+
+    // Everything about the topic comes from config.json: the name, the
+    // words at the top, even the example in the box. Switch config file and
+    // the whole page changes with it, without touching this code.
+    fetch('./config.json', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((config) => {
+        const title = config.title || config.topic;
+        document.title = title;
+        for (const id of ['brand-title', 'title', 'footer-title']) {
+          document.getElementById(id).textContent = title;
+        }
+        if (config.intro) document.getElementById('intro').textContent = config.intro;
+        if (config.tip) document.getElementById('tip').textContent = config.tip;
+        document.getElementById('submission-label').textContent = config.submission;
+        box.placeholder = config.placeholder || '';
+      })
+      .catch(() => { /* the page still works with the plain words already on it */ });
+
+    // Builds a small piece of the page. textContent, not innerHTML: whatever
+    // the AI writes is shown as words, and can never be run as code.
+    function make(tag, className, text) {
+      const el = document.createElement(tag);
+      el.className = className;
+      if (text !== undefined) el.textContent = text;
+      return el;
+    }
+
+    function judgeCard(r) {
+      const card = make('article', 'bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm flex flex-col');
+      card.appendChild(make('h2', 'font-display text-xl font-bold text-slate-900', r.judge));
+      card.appendChild(make('p', 'mt-1 text-xs text-slate-500 leading-relaxed', r.character));
+
+      // A judge who refused shows a dash, not a number. Showing 0 would look
+      // like a terrible score, which is not what happened.
+      const score = make('div', 'mt-4 font-display text-5xl font-extrabold tabular-nums leading-none '
+        + (r.score === null ? 'text-slate-300' : 'text-sky-600'), r.score === null ? '-' : String(r.score));
+      score.appendChild(make('span', 'text-xl text-slate-400', '/10'));
+      card.appendChild(score);
+
+      card.appendChild(make('p', 'mt-4 pt-4 border-t border-slate-100 text-slate-700 text-sm leading-relaxed flex-1', r.reason));
+      return card;
+    }
+
+    const METHOD_NAMES = { average: 'Average', strictest: 'Strictest', majority: 'Majority' };
+
+    // The verdict box changes colour to match what happened, so a learner
+    // can tell at a glance whether they got a score, got turned down, or
+    // need to say more. Asking for more is amber, not red: nothing went wrong.
+    const VERDICT_LOOKS = {
+      scored: { label: 'The verdict', colours: 'from-sky-600 to-indigo-600' },
+      refused: { label: 'Turned down', colours: 'from-slate-500 to-slate-700' },
+      more: { label: 'The panel needs more', colours: 'from-amber-500 to-orange-500' },
+    };
+
+    function showPanel(data) {
+      const cards = document.getElementById('cards');
+      cards.innerHTML = '';
+      for (const r of data.results) cards.appendChild(judgeCard(r));
+      // When the panel asked for more before any judge looked, there are no
+      // cards to show, only the message.
+      cards.classList.toggle('hidden', data.results.length === 0);
+
+      const look = VERDICT_LOOKS[data.status] || VERDICT_LOOKS.scored;
+      const verdictBox = document.getElementById('verdict');
+      verdictBox.className = verdictBox.className.replace(/from-\S+ to-\S+/, look.colours);
+      verdictBox.classList.toggle('mt-6', data.results.length > 0);
+      document.getElementById('verdict-label').textContent = look.label;
+
+      const v = data.verdict;
+      document.getElementById('verdict-method').textContent = METHOD_NAMES[v.method] || v.method;
+      document.getElementById('verdict-why').textContent = v.why;
+      document.getElementById('verdict-score').textContent = v.score === null ? '' : v.score;
+      document.getElementById('verdict-score').className = v.score === null ? 'text-3xl' : '';
+      document.getElementById('verdict-out-of').classList.toggle('hidden', v.score === null);
+      show(resultEl);
+    }
+
+    async function askThePanel() {
+      const submission = box.value.trim();
+      if (!submission) {
+        showError('Type something in the box first.');
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'The judges are thinking...';
+      show(thinkingEl);
+
+      try {
+        const res = await fetch('./api/judge', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ submission }),
+        });
+        // A page opened straight from a file, or from GitHub Pages, has no
+        // server behind it. Say that plainly rather than showing an error code.
+        if (res.status === 404 || res.status === 405) {
+          throw new Error('There is no server running behind this page, so there is nobody to ask. Start it with the command in the README.');
+        }
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+
+        // textContent, not innerHTML: whatever the AI writes is shown as
+        // words, and can never be run as code on the page.
+        showPanel(data);
+      } catch (err) {
+        const offline = err instanceof TypeError; // fetch could not reach anything at all
+        showError(offline
+          ? 'There is no server running behind this page, so there is nobody to ask. Start it with the command in the README.'
+          : err.message);
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Ask the panel';
+      }
+    }
+
+    sendBtn.addEventListener('click', askThePanel);
+    // Ctrl+Enter (or Cmd+Enter on a Mac) sends it, so a fast typer never has
+    // to reach for the mouse. A plain Enter still makes a new line.
+    box.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) askThePanel();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# Your secret key lives here. It must never be uploaded to GitHub.
+.env
+node_modules/
+.DS_Store

@@ -1,5 +1,7 @@
 # AI Architects · Project 9: Test it and put it online (final)
 
+**See it working:** [https://hecsh.github.io/ai-architects-p9-final/](https://hecsh.github.io/ai-architects-p9-final/). This example site replays real answers recorded from the judges, so you can try the examples without a key. It lives in the `docs` folder; you do not need to change it.
+
 The finished panel, Projects 5 to 9. Everything from the earlier projects is here:
 
 - **A panel of three judges and a verdict.** Each judge scores out of ten and says why in two sentences.

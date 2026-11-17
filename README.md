@@ -94,7 +94,7 @@ Leave the file name off and you get `config.json`, which is soccer.
 | `placeholder` | The grey example in the empty box. |
 | `tip` | The small hint under the box. |
 | `verdict` | `"average"`, `"strictest"` or `"majority"`. |
-| `judges` | Three judges, each with a `name`, a `character`, a `rubric` saying what a 9, a 5 and a 2 look like, and an optional `avatar` picture. |
+| `judges` | Three judges, each with a `name`, a `character`, a `rubric` saying what a 9, a 5 and a 2 look like, and an optional `avatar` picture and `voice`. |
 
 ### Give your judges faces
 
@@ -111,6 +111,8 @@ Your judges sit on a stage. They blink, breathe and look around, and when they a
 | `av-head` | Sways, and bobs while talking |
 | `av-eyes` | Blinks, and looks around while thinking |
 | `av-mouth-closed` and `av-mouth-open` | Swaps between the two while talking |
+
+**Give them a voice too.** Add `"voice": { "accent": "en-GB", "gender": "male", "pitch": 0.95, "rate": 1.1 }` to a judge. `accent` is which English the page looks for first (`en-GB`, `en-US`, `en-AU`, `en-IN`...), `gender` is `"male"` or `"female"`, `pitch` and `rate` go from about 0.5 to 2, and 1 is normal. The page always picks the most natural-sounding voice the computer has, so it sounds different on different computers.
 
 A `.png` works too, but it stays still. A judge with no picture at all gets `avatars/judge.svg`, dressed in their seat colour.
 

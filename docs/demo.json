@@ -17,6 +17,12 @@
             "name": "The Pundit",
             "character": "A loud television pundit. Cares whether a claim is bold and whether it is actually backed up.",
             "avatar": "avatars/pundit.svg",
+            "voice": {
+              "accent": "en-GB",
+              "gender": "male",
+              "pitch": 0.95,
+              "rate": 1.12
+            },
             "rubric": {
               "9": "a clear claim with two or more specific reasons",
               "5": "a fair opinion resting on one thin reason",
@@ -27,6 +33,12 @@
             "name": "The Analyst",
             "character": "Dry and stats minded. Cares whether the facts used are real and used correctly.",
             "avatar": "avatars/analyst.svg",
+            "voice": {
+              "accent": "en-US",
+              "gender": "male",
+              "pitch": 0.9,
+              "rate": 0.95
+            },
             "rubric": {
               "9": "uses specific checkable facts, correctly",
               "5": "gestures at form or recent results without specifics",
@@ -37,6 +49,12 @@
             "name": "The Supporter",
             "character": "In the stands, heart on sleeve. Cares whether this would win an argument with a rival fan.",
             "avatar": "avatars/supporter.svg",
+            "voice": {
+              "accent": "en-AU",
+              "gender": "male",
+              "pitch": 1.05,
+              "rate": 1.12
+            },
             "rubric": {
               "9": "confident, memorable, would hold up in an argument",
               "5": "reasonable but forgettable",
@@ -200,6 +218,12 @@
             "name": "The Director",
             "character": "Thinks about the show as a whole. Cares whether the choice serves the story.",
             "avatar": "avatars/director.svg",
+            "voice": {
+              "accent": "en-GB",
+              "gender": "male",
+              "pitch": 0.9,
+              "rate": 0.95
+            },
             "rubric": {
               "9": "shows how the choice changes what the audience feels at that moment",
               "5": "defensible, with a general reason",
@@ -210,6 +234,12 @@
             "name": "The Critic",
             "character": "Precise and a little cold. Cares about craft and detail.",
             "avatar": "avatars/critic.svg",
+            "voice": {
+              "accent": "en-US",
+              "gender": "female",
+              "pitch": 1.0,
+              "rate": 0.98
+            },
             "rubric": {
               "9": "names particular moments, songs, or what the part demands of a singer",
               "5": "talks in generalities",
@@ -220,6 +250,12 @@
             "name": "The Superfan",
             "character": "Has seen it eleven times. Cares whether this is a take worth arguing about.",
             "avatar": "avatars/superfan.svg",
+            "voice": {
+              "accent": "en-AU",
+              "gender": "female",
+              "pitch": 1.12,
+              "rate": 1.15
+            },
             "rubric": {
               "9": "a bold choice defended with real knowledge of the show",
               "5": "safe and predictable",
@@ -361,6 +397,12 @@
             "name": "The Engineer",
             "character": "Practical and unexcitable. Cares whether the thing could actually be built.",
             "avatar": "avatars/engineer.svg",
+            "voice": {
+              "accent": "en-AU",
+              "gender": "male",
+              "pitch": 0.9,
+              "rate": 0.95
+            },
             "rubric": {
               "9": "realistic, and names the parts it would need",
               "5": "plausible but vague about how it works",
@@ -371,6 +413,12 @@
             "name": "The Investor",
             "character": "Impatient. Cares whether anybody actually needs this.",
             "avatar": "avatars/investor.svg",
+            "voice": {
+              "accent": "en-US",
+              "gender": "male",
+              "pitch": 0.95,
+              "rate": 1.15
+            },
             "rubric": {
               "9": "names a real problem and the people who have it",
               "5": "useful to somebody, but unclear who",
@@ -381,6 +429,12 @@
             "name": "The Ten Year Old",
             "character": "Honest to a fault. Cares whether it is cool.",
             "avatar": "avatars/ten-year-old.svg",
+            "voice": {
+              "accent": "en-GB",
+              "gender": "male",
+              "pitch": 1.25,
+              "rate": 1.1
+            },
             "rubric": {
               "9": "wants one immediately",
               "5": "shrugs, says it is fine",

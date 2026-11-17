@@ -12,6 +12,12 @@
       "name": "The Pundit",
       "character": "A loud television pundit. Cares whether a claim is bold and whether it is actually backed up.",
       "avatar": "avatars/pundit.svg",
+      "voice": {
+        "accent": "en-GB",
+        "gender": "male",
+        "pitch": 0.95,
+        "rate": 1.12
+      },
       "rubric": {
         "9": "a clear claim with two or more specific reasons",
         "5": "a fair opinion resting on one thin reason",
@@ -22,6 +28,12 @@
       "name": "The Analyst",
       "character": "Dry and stats minded. Cares whether the facts used are real and used correctly.",
       "avatar": "avatars/analyst.svg",
+      "voice": {
+        "accent": "en-US",
+        "gender": "male",
+        "pitch": 0.9,
+        "rate": 0.95
+      },
       "rubric": {
         "9": "uses specific checkable facts, correctly",
         "5": "gestures at form or recent results without specifics",
@@ -32,6 +44,12 @@
       "name": "The Supporter",
       "character": "In the stands, heart on sleeve. Cares whether this would win an argument with a rival fan.",
       "avatar": "avatars/supporter.svg",
+      "voice": {
+        "accent": "en-AU",
+        "gender": "male",
+        "pitch": 1.05,
+        "rate": 1.12
+      },
       "rubric": {
         "9": "confident, memorable, would hold up in an argument",
         "5": "reasonable but forgettable",

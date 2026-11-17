@@ -434,9 +434,10 @@
 
         el.append(bubble, portrait, plate);
         seatsEl.appendChild(el);
-        seats[judge.name] = { el, bubble, words, portrait, figure, index: i };
+        seats[judge.name] = { el, bubble, words, portrait, figure, index: i, judge };
         loadPicture(figure, judge);
       });
+      loadVoices();
     }
 
     // The judge's picture, from "avatar" in the config file. A judge with no
@@ -464,14 +465,12 @@
     }
 
     // ---------- Voices ----------
-    // The browser can read text out loud. Each seat gets a different pitch
-    // and speed so the judges do not all sound the same. The button at the
-    // top turns the voices off, and the page remembers that choice.
-    const VOICE_STYLES = [
-      { pitch: 0.85, rate: 1.08 },
-      { pitch: 1.0, rate: 0.95 },
-      { pitch: 1.3, rate: 1.1 },
-    ];
+    // The browser reads each answer out loud. Every computer has different
+    // voices, so the page picks the most natural ones it can find and gives
+    // each judge a different one. A judge can ask for an accent, a male or
+    // female voice, a pitch and a speed with "voice" in the config file:
+    //   "voice": { "accent": "en-GB", "gender": "male", "pitch": 0.95, "rate": 1.1 }
+    // The button at the top turns the voices off, and the page remembers.
     const canSpeak = 'speechSynthesis' in window;
     let voicesOn = canSpeak;
     try { if (localStorage.getItem('voices') === 'off') voicesOn = false; } catch {}
@@ -490,65 +489,167 @@
       showVoiceButton();
     });
     showVoiceButton();
-    if (canSpeak) speechSynthesis.getVoices(); // the browser loads its voices lazily
+
+    // Some computers come with joke voices (Zarvox, Bubbles, Bad News...)
+    // and old robotic ones. Never pick those.
+    const SILLY_VOICES = /albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|ralph|kathy|grandma|grandpa|eddy|flo|reed|rocko|sandy|shelley/i;
+
+    // Higher is better. Online and "natural" voices sound the most human.
+    function voiceQuality(v) {
+      let q = 0;
+      if (/natural|neural|online/i.test(v.name)) q += 6;
+      if (/google/i.test(v.name)) q += 5;
+      if (/premium|enhanced|siri/i.test(v.name)) q += 4;
+      if (/samantha|daniel|karen|moira|tessa|alex|ava|evan|zoe|serena|oliver|allison|susan|tom|aaron|nicky|martha|arthur/i.test(v.name)) q += 3;
+      if (!v.localService) q += 1;
+      return q;
+    }
+
+    // Voices that sound male or female, so a judge can ask for one.
+    const MALE_VOICES = /\bmale\b|daniel|rishi|alex|aaron|arthur|evan|tom|oliver|guy|ryan|william|christopher|eric|james|brian|george|liam|reed|rocko|eddy|grandpa|fred|ralph|junior/i;
+    const FEMALE_VOICES = /female|samantha|karen|moira|tessa|serena|martha|ava|allison|susan|zoe|nicky|kate|victoria|catherine|fiona|veena|sonia|natasha|aria|jenny|libby|google us english/i;
+    function soundsLike(v, gender) {
+      if (gender === 'male') return MALE_VOICES.test(v.name) && !/female/i.test(v.name);
+      if (gender === 'female') return FEMALE_VOICES.test(v.name);
+      return true;
+    }
+
+    // Where each seat looks for a voice if the config does not say.
+    const SEAT_ACCENTS = ['en-GB', 'en-US', 'en-AU'];
+    let goodVoices = [];
+    const voiceFor = new Map();
+
+    function loadVoices() {
+      if (!canSpeak) return;
+      goodVoices = speechSynthesis.getVoices()
+        .filter((v) => /^en[-_]/i.test(v.lang) && !SILLY_VOICES.test(v.name))
+        .sort((a, b) => voiceQuality(b) - voiceQuality(a));
+      voiceFor.clear();
+      const used = new Set();
+      for (const seat of Object.values(seats)) {
+        const accent = (seat.judge.voice && seat.judge.voice.accent) || SEAT_ACCENTS[seat.index % SEAT_ACCENTS.length];
+        const gender = seat.judge.voice && seat.judge.voice.gender;
+        const sameAccent = (v) => v.lang.replace('_', '-').toLowerCase().startsWith(accent.toLowerCase());
+        const free = (v) => !used.has(v);
+        // Best match first: right accent and voice, then right voice, then
+        // right accent, then anything not taken yet.
+        const pick = goodVoices.find((v) => free(v) && sameAccent(v) && soundsLike(v, gender))
+          || goodVoices.find((v) => free(v) && soundsLike(v, gender))
+          || goodVoices.find((v) => free(v) && sameAccent(v))
+          || goodVoices.find(free)
+          || goodVoices[0];
+        if (pick) { voiceFor.set(seat, pick); used.add(pick); }
+      }
+    }
+    if (canSpeak) speechSynthesis.addEventListener('voiceschanged', loadVoices);
 
     // Things to stop at once if someone presses Skip.
     let skipping = false;
     const stopNow = new Set();
 
-    function sayAloud(text, seatIndex) {
-      if (!voicesOn || !canSpeak) return Promise.resolve();
+    // ---------- Talking ----------
+    // The answer is spoken one sentence at a time. Long answers in one go
+    // can get cut off in some browsers, and the pauses between sentences
+    // sound more natural. The words appear in the bubble as they are said,
+    // and the mouth only moves while the judge is actually talking.
+    function sentencesOf(text) {
+      return (text.match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g) || [text]).map((s) => s.trim()).filter(Boolean);
+    }
+
+    function startMouth(seat) {
+      stopMouth(seat);
+      const flap = () => {
+        seat.figure.classList.toggle('mouth-open');
+        seat.mouthTimer = setTimeout(flap, 90 + Math.random() * 110);
+      };
+      flap();
+    }
+    function stopMouth(seat) {
+      clearTimeout(seat.mouthTimer);
+      seat.figure.classList.remove('mouth-open');
+    }
+
+    // Says one sentence, adding its words to the bubble as it goes.
+    function saySentence(seat, sentence, shownBefore) {
+      const words = sentence.split(/\s+/);
+      let shown = 0;
+      const show = (n) => {
+        shown = Math.max(shown, Math.min(n, words.length));
+        seat.words.textContent = (shownBefore ? shownBefore + ' ' : '') + words.slice(0, shown).join(' ');
+      };
+
       return new Promise((resolve) => {
-        const done = () => { stopNow.delete(done); resolve(); };
+        let finished = false;
+        let typing;
+        const done = () => {
+          if (finished) return;
+          finished = true;
+          clearInterval(typing);
+          clearTimeout(safety);
+          stopNow.delete(done);
+          stopMouth(seat);
+          show(words.length);
+          resolve();
+        };
         stopNow.add(done);
-        const line = new SpeechSynthesisUtterance(text);
-        const english = speechSynthesis.getVoices().filter((v) => v.lang.startsWith('en'));
-        if (english.length) line.voice = english[(seatIndex * 3) % english.length];
-        const style = VOICE_STYLES[seatIndex % VOICE_STYLES.length];
-        line.pitch = style.pitch;
-        line.rate = style.rate;
+
+        // Without a voice: type the words at reading speed.
+        if (!voicesOn || !canSpeak || !voiceFor.get(seat)) {
+          startMouth(seat);
+          typing = setInterval(() => (shown >= words.length ? done() : show(shown + 1)), 170);
+          var safety = setTimeout(done, 400 + words.length * 200);
+          return;
+        }
+
+        const style = seat.judge.voice || {};
+        const line = new SpeechSynthesisUtterance(sentence);
+        line.voice = voiceFor.get(seat);
+        line.lang = line.voice.lang;
+        line.pitch = style.pitch || [0.95, 1.0, 1.08][seat.index % 3];
+        line.rate = style.rate || [1.05, 0.97, 1.1][seat.index % 3];
+
+        // Some voices say exactly which word they are on. Others do not, so
+        // the words also move along by time, at the voice's speed.
+        line.onboundary = (e) => {
+          if (e.name && e.name !== 'word') return;
+          show(sentence.slice(0, e.charIndex).split(/\s+/).filter(Boolean).length + 1);
+        };
+        line.onstart = () => {
+          startMouth(seat);
+          const msPerWord = 330 / line.rate;
+          typing = setInterval(() => { if (shown < words.length - 1) show(shown + 1); }, msPerWord);
+        };
         line.onend = done;
         line.onerror = done;
         // Never wait for ever, in case the browser forgets to say it finished.
-        setTimeout(done, 3000 + text.length * 90);
+        var safety = setTimeout(done, 2500 + sentence.length * 110);
         speechSynthesis.speak(line);
       });
     }
 
-    // ---------- Talking ----------
-    // The judge's words appear one at a time in the bubble while the mouth
-    // flaps and the voice reads them out. It finishes when both are done.
-    function speak(seat, text) {
+    async function speak(seat, text) {
       seat.bubble.hidden = false;
       if (skipping) {
         seat.words.textContent = text;
-        return Promise.resolve();
+        return;
       }
       seat.el.classList.remove('thinking');
       seat.el.classList.add('talking');
       stage.classList.add('someone-talking');
       seat.words.textContent = '';
 
-      const flap = setInterval(() => seat.figure.classList.toggle('mouth-open'), 150);
-      const voice = sayAloud(text, seat.index);
-      const words = text.split(' ');
-      const typed = new Promise((resolve) => {
-        let i = 0;
-        const done = () => { clearInterval(typing); stopNow.delete(done); seat.words.textContent = text; resolve(); };
-        stopNow.add(done);
-        const typing = setInterval(() => {
-          if (i >= words.length) return done();
-          seat.words.textContent += (i ? ' ' : '') + words[i++];
-        }, voicesOn ? 300 : 170);
-      });
+      let said = '';
+      for (const sentence of sentencesOf(text)) {
+        if (skipping) break;
+        await saySentence(seat, sentence, said);
+        said = (said ? said + ' ' : '') + sentence;
+      }
 
-      return Promise.all([typed, voice]).then(() => {
-        clearInterval(flap);
-        seat.figure.classList.remove('mouth-open');
-        seat.el.classList.remove('talking');
-        stage.classList.remove('someone-talking');
-        return new Promise((r) => setTimeout(r, skipping ? 0 : 350));
-      });
+      seat.words.textContent = text;
+      stopMouth(seat);
+      seat.el.classList.remove('talking');
+      stage.classList.remove('someone-talking');
+      if (!skipping) await new Promise((r) => setTimeout(r, 350));
     }
 
     // ---------- Scorecards ----------

@@ -4,233 +4,574 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Judges</title>
-  <meta name="description" content="Type something in and a panel of AI judges scores it out of ten">
-  <meta name="theme-color" content="#38bdf8">
+  <meta name="description" content="Type something in and a panel of AI judges talks it through and scores it out of ten">
+  <meta name="theme-color" content="#14213d">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            display: ['Outfit', 'sans-serif'],
-            body: ['"Plus Jakarta Sans"', 'sans-serif']
-          }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
 
   <style>
+    /* ---------- Colours and fonts ----------
+       Change these and the whole page follows. Each seat on the stage has
+       its own colour, so you can tell the judges apart at a glance. */
+    :root {
+      --paper: #f6f1e7;
+      --card: #fffdf8;
+      --ink: #18181b;
+      --muted: #5d5a52;
+      --line: #ded6c6;
+      --stage: #14213d;
+      --stage-floor: #0e182e;
+      --plate: #0a1222;
+      --gold: #ffd23f;
+      --seat-1: #ff6b2c;
+      --seat-2: #3a86ff;
+      --seat-3: #2bb673;
+      --display: 'Bricolage Grotesque', 'Arial Black', sans-serif;
+      --body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      background-color: #f8fafc;
-      color: #1e293b;
+      margin: 0;
+      font-family: var(--body);
+      background: var(--paper);
+      color: var(--ink);
       -webkit-font-smoothing: antialiased;
     }
-    h1, h2, h3, .font-display {
-      font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+    [hidden] { display: none !important; }
+
+    /* ---------- Top bar ---------- */
+    .masthead { border-bottom: 2px solid var(--ink); background: var(--paper); }
+    .masthead-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+    .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-family: var(--display); font-weight: 800; font-size: 20px; letter-spacing: -0.02em; }
+    .brand-badge {
+      display: grid; place-items: center; width: 38px; height: 38px;
+      background: var(--gold); border: 2px solid var(--ink); border-radius: 8px;
+      transform: rotate(-6deg); font-size: 17px; box-shadow: 3px 3px 0 var(--ink);
+    }
+    .tools { display: flex; align-items: center; gap: 10px; }
+    @media (max-width: 520px) { .on-air { display: none; } .brand { font-size: 17px; } }
+    .on-air {
+      font: 700 11px/1 var(--body); letter-spacing: 0.14em; text-transform: uppercase;
+      color: #9b938a; border: 2px solid #c9c0b0; border-radius: 6px; padding: 6px 8px;
+      transition: all 0.3s;
+    }
+    .on-air.live { color: #fff; background: #e11d48; border-color: #e11d48; box-shadow: 0 0 18px rgba(225, 29, 72, 0.55); }
+    .voice-toggle {
+      display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+      font: 700 13px var(--body); color: var(--ink); background: var(--card);
+      border: 2px solid var(--ink); border-radius: 999px; padding: 6px 12px;
+    }
+    .voice-toggle[aria-pressed="false"] { color: var(--muted); border-color: #c9c0b0; }
+    .voice-toggle svg { width: 16px; height: 16px; }
+
+    /* ---------- The question ---------- */
+    .intro { padding-top: 44px; }
+    .kicker { margin: 0; font: 700 13px var(--body); letter-spacing: 0.14em; text-transform: uppercase; color: #c2410c; }
+    h1 {
+      margin: 6px 0 0; font-family: var(--display); font-weight: 800;
+      font-size: clamp(40px, 7vw, 76px); line-height: 0.95; letter-spacing: -0.035em;
+    }
+    .lede { max-width: 640px; margin: 14px 0 0; font-size: 18px; line-height: 1.5; color: var(--muted); }
+
+    .cue {
+      margin-top: 28px; margin-bottom: 40px; padding: 20px;
+      background: var(--card); border: 2px solid var(--ink); border-radius: 14px;
+      box-shadow: 6px 6px 0 var(--ink);
+    }
+    .cue-label { display: block; margin-bottom: 10px; font-weight: 700; font-size: 15px; }
+    textarea {
+      width: 100%; min-height: 104px; resize: vertical; padding: 14px 16px;
+      font: 18px/1.45 var(--body); color: var(--ink);
+      background: var(--paper); border: 2px solid var(--line); border-radius: 10px;
+    }
+    textarea:focus { outline: none; border-color: var(--ink); }
+    .cue-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+    .tip { margin: 0; font-size: 14px; color: var(--muted); }
+    .send {
+      cursor: pointer; font: 800 17px var(--display); letter-spacing: -0.01em;
+      color: #fff; background: var(--ink); border: 0; border-radius: 999px; padding: 13px 24px;
+      transition: transform 0.15s;
+    }
+    .send:hover { transform: translateY(-2px); }
+    .send:disabled { opacity: 0.6; cursor: wait; transform: none; }
+    .error { margin: 14px 0 0; padding: 12px 14px; background: #fff1e6; border-left: 4px solid #ea580c; border-radius: 6px; font-size: 15px; }
+
+    /* ---------- The stage ---------- */
+    .stage { position: relative; background: var(--stage); color: #fff; padding: 34px 0 0; overflow: hidden; }
+    /* A row of studio lights along the top. */
+    .rig { position: absolute; inset: 0 0 auto; height: 14px; background: radial-gradient(circle, #ffe9a8 0 3px, transparent 4px) 0 0 / 46px 14px repeat-x, #0b1426; }
+    .seats {
+      position: relative; display: grid; gap: 22px; align-items: end;
+      grid-template-columns: repeat(var(--count, 3), minmax(0, 1fr));
+      padding-top: 28px;
+    }
+    .seats.solo { max-width: 420px; margin: 0 auto; }
+
+    .seat { position: relative; display: flex; flex-direction: column; align-items: center; transition: opacity 0.3s; }
+    .stage.someone-talking .seat:not(.talking) { opacity: 0.55; }
+
+    .bubble {
+      position: relative; align-self: stretch; margin-bottom: 14px; padding: 14px 16px;
+      background: #fff; color: var(--ink); border-radius: 16px; font-size: 16px; line-height: 1.45;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+    }
+    .bubble::after {
+      content: ''; position: absolute; left: 50%; bottom: -10px; margin-left: -10px;
+      border: 10px solid transparent; border-bottom: 0; border-top-color: #fff;
+    }
+    .bubble p { margin: 0; }
+    .bubble.no-score { background: #e8e4dc; }
+    .bubble.no-score::after { border-top-color: #e8e4dc; }
+    .dots span { display: inline-block; width: 8px; height: 8px; margin: 0 2px; border-radius: 50%; background: #9b938a; animation: dot 1s infinite; }
+    .dots span:nth-child(2) { animation-delay: 0.15s; }
+    .dots span:nth-child(3) { animation-delay: 0.3s; }
+
+    .portrait { position: relative; width: min(220px, 100%); aspect-ratio: 1; }
+    .spot { position: absolute; inset: 12% 8% 0; border-radius: 50% 50% 0 0; background: var(--seat); opacity: 0.9; transition: filter 0.3s; }
+    .seat.talking .spot { filter: brightness(1.2); }
+    .figure { position: absolute; inset: 0; color: var(--seat); }
+    .figure svg, .figure img { width: 100%; height: 100%; display: block; overflow: visible; }
+
+    /* The judge's scorecard, held up once they have spoken. */
+    .scorecard {
+      position: absolute; left: -6px; bottom: 6px; z-index: 2; min-width: 82px; padding: 8px 10px 6px;
+      background: #fff; color: var(--ink); border: 3px solid var(--ink); border-radius: 8px;
+      font-family: var(--display); font-weight: 800; text-align: center; line-height: 1;
+      transform-origin: 50% 100%; animation: card-up 0.5s cubic-bezier(.2, 1.4, .4, 1) both;
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+    }
+    .scorecard-num { font-size: 46px; letter-spacing: -0.04em; }
+    .scorecard-of { font-size: 16px; color: var(--muted); }
+    .scorecard-note { display: block; margin-top: 4px; font: 700 11px var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+    .plate {
+      position: relative; z-index: 1; align-self: stretch; padding: 12px 14px 16px;
+      background: var(--plate); border-top: 5px solid var(--seat); text-align: center;
+    }
+    .plate h2 { margin: 0; font: 800 20px var(--display); letter-spacing: -0.01em; text-transform: uppercase; }
+    .plate p { margin: 6px 0 0; font-size: 14px; line-height: 1.4; color: #b8c2d6; }
+    /* The desk the judges sit behind. */
+    .desk { height: 22px; background: var(--stage-floor); border-top: 2px solid #22345c; }
+
+    .stage-foot { display: flex; justify-content: center; padding: 14px 0 0; min-height: 52px; }
+    .skip { cursor: pointer; font: 700 14px var(--body); color: #fff; background: transparent; border: 2px solid #4a5d86; border-radius: 999px; padding: 8px 16px; }
+
+    /* ---------- How the judges move ----------
+       The pictures have named parts: av-body, av-head, av-eyes and two
+       mouths. These rules make them breathe, sway and blink on their own.
+       The code below adds "talking" or "thinking" to a seat to change how
+       they move, and flips the mouth open and shut while they speak. */
+    .av-body, .av-head, .av-eyes, .av-prop { transform-box: fill-box; }
+    .av-body { transform-origin: 50% 100%; animation: breathe 4.5s ease-in-out infinite; }
+    .av-head { transform-origin: 50% 92%; animation: sway 6s ease-in-out infinite; animation-delay: var(--delay, 0s); }
+    .av-eyes { transform-origin: center; animation: blink 5.4s infinite; animation-delay: var(--delay, 0s); }
+    .av-prop { transform-origin: 30% 100%; }
+    .figure.mouth-open .av-mouth-open { display: inline; }
+    .figure.mouth-open .av-mouth-closed { display: none; }
+    .seat.talking .av-head { animation: talk 0.5s ease-in-out infinite; }
+    .seat.talking .av-prop { animation: gesture 1.3s ease-in-out infinite; }
+    .seat.thinking .av-head { animation: ponder 2.6s ease-in-out infinite; }
+    .seat.thinking .av-eyes { animation: glance 2.6s ease-in-out infinite; }
+    .seat.cheer .figure { animation: hop 0.45s ease-out 2; }
+    .seat.tut .av-head { animation: shake 0.4s ease-in-out 2; }
+
+    @keyframes breathe { 50% { transform: scaleY(1.018); } }
+    @keyframes sway { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+    @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+    @keyframes talk { 0%, 100% { transform: rotate(-1.5deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-3px); } }
+    @keyframes gesture { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-7deg) translateY(-4px); } }
+    @keyframes ponder { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(-2deg); } }
+    @keyframes glance { 0%, 100% { transform: translate(3px, -3px); } 50% { transform: translate(-2px, -3px); } }
+    @keyframes hop { 50% { transform: translateY(-12px); } }
+    @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-7deg); } 75% { transform: rotate(7deg); } }
+    @keyframes dot { 0%, 100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
+    @keyframes card-up { from { transform: translateY(40px) rotate(-8deg); opacity: 0; } to { transform: translateY(0) rotate(4deg); opacity: 1; } }
+    @keyframes stamp { from { transform: scale(1.35) rotate(-6deg); opacity: 0; } to { transform: scale(1) rotate(-1deg); opacity: 1; } }
+
+    /* ---------- The verdict ---------- */
+    .verdict { padding-top: 36px; }
+    .ticket {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px;
+      padding: 22px 26px; background: var(--gold); color: var(--ink);
+      border: 3px solid var(--ink); border-radius: 14px; box-shadow: 8px 8px 0 var(--ink);
+      animation: stamp 0.45s cubic-bezier(.2, 1.3, .4, 1) both;
+    }
+    .ticket.refused { background: #d6d3cd; }
+    .ticket.more { background: #ffb36b; }
+    .ticket-label { margin: 0; font: 700 13px var(--body); letter-spacing: 0.14em; text-transform: uppercase; }
+    .chip { margin-left: 6px; padding: 3px 8px; border: 2px solid var(--ink); border-radius: 999px; font-size: 11px; letter-spacing: 0.06em; }
+    .ticket-why { margin: 8px 0 0; max-width: 620px; font-size: 18px; line-height: 1.45; }
+    .ticket-score { font: 800 84px/0.9 var(--display); letter-spacing: -0.05em; }
+    .ticket-score small { font-size: 28px; letter-spacing: 0; }
+
+    footer { margin-top: 48px; padding: 22px 0 30px; border-top: 2px solid var(--ink); font-size: 14px; color: var(--muted); }
+
+    /* ---------- Phones ----------
+       On a narrow screen the judges stack: picture on the left, what they
+       say on the right. */
+    @media (max-width: 720px) {
+      .seats { grid-template-columns: 1fr; gap: 26px; }
+      .seat { display: grid; grid-template-columns: 120px minmax(0, 1fr); grid-template-areas: "portrait bubble" "plate plate"; align-items: end; column-gap: 12px; }
+      .portrait { grid-area: portrait; width: 120px; }
+      .bubble { grid-area: bubble; align-self: center; margin: 0 0 12px; }
+      .bubble::after { left: -10px; top: 50%; bottom: auto; margin: -10px 0 0; border: 10px solid transparent; border-left: 0; border-right-color: #fff; }
+      .bubble.no-score::after { border-right-color: #e8e4dc; border-top-color: transparent; }
+      .plate { grid-area: plate; text-align: left; }
+      .scorecard { min-width: 56px; left: -8px; padding: 6px 6px 4px; }
+      .scorecard-note { font-size: 9px; }
+      .scorecard-num { font-size: 34px; }
+      .ticket-score { font-size: 64px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .figure *, .seat, .scorecard, .ticket { animation: none !important; }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+<body>
 
-  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-8">
-      <a href="#" class="flex items-center gap-2.5 text-slate-900 shrink-0">
-        <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center text-white shadow-sm shadow-sky-500/20 font-display font-extrabold">10</span>
-        <span class="font-display font-bold text-xl tracking-tight text-slate-900 whitespace-nowrap" id="brand-title">Judges</span>
-      </a>
+  <header class="masthead">
+    <div class="wrap masthead-row">
+      <a href="#" class="brand"><span class="brand-badge">10</span><span id="brand-title">Judges</span></a>
+      <div class="tools">
+        <span id="on-air" class="on-air">On air</span>
+        <button id="voices" class="voice-toggle" type="button" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path id="voices-waves" d="M16.5 8.5a5 5 0 0 1 0 7M19.5 5.5a9 9 0 0 1 0 13"/></svg>
+          <span id="voices-label">Voices on</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <section class="bg-gradient-to-b from-sky-100/70 via-indigo-50/40 to-slate-50 border-b border-slate-200/80 pt-10 pb-8 px-4 sm:px-6">
-    <div class="max-w-4xl mx-auto">
-      <div class="inline-flex items-center gap-2 text-xs font-bold text-sky-700 uppercase tracking-wider mb-2">
-        <span class="w-2 h-2 rounded-full bg-sky-500"></span>
-        <span>The panel is in</span>
-      </div>
-      <!-- Every word in this part comes from config.json. The page itself
-           does not know what topic it is about, so the same page works for
-           any topic. -->
-      <h1 id="title" class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-        Judges
-      </h1>
-      <p id="intro" class="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl">
-        Type it in. The judges score it out of ten, tell you why, and then the panel gives its verdict.
-      </p>
+  <section class="wrap intro">
+    <p class="kicker">Tonight's panel</p>
+    <!-- Every word in this part comes from config.json. The page itself
+         does not know what topic it is about, so the same page works for
+         any topic. -->
+    <h1 id="title">Judges</h1>
+    <p id="intro" class="lede">Type it in. The judges talk it through, score it out of ten, and then the panel gives its verdict.</p>
+  </section>
 
-      <!-- The box. What gets typed here is sent to the server, never
-           straight to the AI, because only the server has the key. -->
-      <div class="mt-8 bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-sm">
-        <label for="submission" class="block text-sm font-bold text-slate-800 mb-2">
-          Send in <span id="submission-label">something to judge</span>
-        </label>
-        <textarea id="submission" rows="4"
-          placeholder=""
-          class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm sm:text-base text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all"></textarea>
-        <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <p id="tip" class="text-xs text-slate-500">Give a reason or two. The judges like reasons.</p>
-          <button id="send" type="button"
-            class="px-5 py-2.5 rounded-xl text-sm font-bold bg-sky-600 text-white hover:bg-sky-700 disabled:opacity-60 disabled:cursor-wait shadow-sm transition-all whitespace-nowrap">
-            Ask the panel
-          </button>
-        </div>
+  <!-- The box. What gets typed here is sent to the server, never
+       straight to the AI, because only the server has the key. -->
+  <section class="wrap">
+    <div id="cue-card" class="cue">
+      <label for="submission" class="cue-label">Send in <span id="submission-label">something to judge</span></label>
+      <textarea id="submission" rows="3" placeholder=""></textarea>
+      <div class="cue-foot">
+        <p id="tip" class="tip">Give a reason or two. The judges like reasons.</p>
+        <button id="send" class="send" type="button">Ask the panel</button>
       </div>
+      <p id="error-message" class="error" hidden></p>
     </div>
   </section>
 
-  <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8">
-
-    <!-- One card per judge, side by side, so you can see at a glance
-         where they agree and where they do not. Filled in by the code below. -->
-    <div id="result" class="hidden">
-      <div id="cards" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-
-      <!-- The verdict sits underneath, because it comes from the scores above. -->
-      <section id="verdict" class="mt-6 rounded-2xl p-6 bg-gradient-to-tr from-sky-600 to-indigo-600 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div class="text-xs font-bold uppercase tracking-wider text-white/80"><span id="verdict-label">The verdict</span> <span id="verdict-method" class="ml-1 px-2 py-0.5 rounded-md bg-white/15 normal-case tracking-normal"></span></div>
-          <p id="verdict-why" class="mt-2 text-sm sm:text-base text-white/90 leading-relaxed"></p>
-        </div>
-        <div class="font-display text-5xl font-extrabold tabular-nums leading-none shrink-0"><span id="verdict-score"></span><span id="verdict-out-of" class="text-xl text-white/70">/10</span></div>
-      </section>
+  <!-- The stage. One seat per judge, built by the code below from the
+       judges in config.json. -->
+  <section id="stage" class="stage" aria-label="The judges">
+    <div class="rig"></div>
+    <div class="wrap">
+      <div id="seats" class="seats"></div>
     </div>
+    <div class="desk"></div>
+    <div class="stage-foot"><button id="skip" class="skip" type="button" hidden>Skip to the scores</button></div>
+  </section>
 
-    <!-- Thinking. AI answers take a few seconds, and a page that does
-         nothing for that long looks broken. -->
-    <div id="thinking" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm animate-pulse flex flex-col gap-4"><div class="h-5 bg-slate-200 rounded w-1/2"></div><div class="h-10 bg-slate-100 rounded w-1/3"></div><div class="h-16 bg-slate-100 rounded w-full"></div></div>
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm animate-pulse flex flex-col gap-4"><div class="h-5 bg-slate-200 rounded w-1/2"></div><div class="h-10 bg-slate-100 rounded w-1/3"></div><div class="h-16 bg-slate-100 rounded w-full"></div></div>
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm animate-pulse flex flex-col gap-4"><div class="h-5 bg-slate-200 rounded w-1/2"></div><div class="h-10 bg-slate-100 rounded w-1/3"></div><div class="h-16 bg-slate-100 rounded w-full"></div></div>
+  <!-- The verdict comes last, because it comes from the scores above. -->
+  <section id="verdict" class="wrap verdict" hidden>
+    <div id="ticket" class="ticket">
+      <div>
+        <p class="ticket-label"><span id="verdict-label">The verdict</span><span id="verdict-method" class="chip"></span></p>
+        <p id="verdict-why" class="ticket-why"></p>
+      </div>
+      <div id="verdict-number" class="ticket-score"><span id="verdict-score"></span><small>/10</small></div>
     </div>
+  </section>
 
-    <div id="error-container" class="hidden p-6 bg-amber-50 border border-amber-200 rounded-2xl text-center max-w-lg mx-auto">
-      <h3 class="text-base font-bold text-slate-800">The panel could not answer</h3>
-      <p id="error-message" class="text-sm text-slate-600 mt-1"></p>
-    </div>
-
-  </main>
-
-  <footer class="bg-white border-t border-slate-200 mt-12 py-8 px-4 sm:px-6">
-    <div class="max-w-4xl mx-auto text-xs text-slate-500">
-      <span id="footer-title">Judges</span> · An AI Architects project
-    </div>
+  <footer>
+    <div class="wrap"><span id="footer-title">Judges</span> · An AI Architects project</div>
   </footer>
 
   <script>
     const box = document.getElementById('submission');
     const sendBtn = document.getElementById('send');
-    const resultEl = document.getElementById('result');
-    const thinkingEl = document.getElementById('thinking');
-    const errorEl = document.getElementById('error-container');
+    const stage = document.getElementById('stage');
+    const seatsEl = document.getElementById('seats');
+    const skipBtn = document.getElementById('skip');
+    const onAir = document.getElementById('on-air');
     const errorMessage = document.getElementById('error-message');
-
-    function show(which) {
-      for (const el of [resultEl, thinkingEl, errorEl]) el.classList.add('hidden');
-      if (which) which.classList.remove('hidden');
-    }
+    const verdictEl = document.getElementById('verdict');
+    const BUTTON_WORDS = sendBtn.textContent;
 
     function showError(message) {
       errorMessage.textContent = message;
-      show(errorEl);
+      errorMessage.hidden = !message;
     }
-
-    // Everything about the topic comes from config.json: the name, the
-    // words at the top, even the example in the box. Switch config file and
-    // the whole page changes with it, without touching this code.
-    fetch('./config.json', { cache: 'no-store' })
-      .then((r) => r.json())
-      .then((config) => {
-        const title = config.title || config.topic;
-        document.title = title;
-        for (const id of ['brand-title', 'title', 'footer-title']) {
-          document.getElementById(id).textContent = title;
-        }
-        if (config.intro) document.getElementById('intro').textContent = config.intro;
-        if (config.tip) document.getElementById('tip').textContent = config.tip;
-        document.getElementById('submission-label').textContent = config.submission;
-        box.placeholder = config.placeholder || '';
-      })
-      .catch(() => { /* the page still works with the plain words already on it */ });
 
     // Builds a small piece of the page. textContent, not innerHTML: whatever
     // the AI writes is shown as words, and can never be run as code.
     function make(tag, className, text) {
       const el = document.createElement(tag);
-      el.className = className;
+      if (className) el.className = className;
       if (text !== undefined) el.textContent = text;
       return el;
     }
 
+    // ---------- The seats ----------
+    // One seat per judge: a speech bubble, the judge's picture, and a name
+    // plate on the desk. They are found again later by the judge's name.
+    const seats = {};
+
+    function buildSeats(judges) {
+      seatsEl.innerHTML = '';
+      seatsEl.style.setProperty('--count', judges.length);
+      seatsEl.classList.toggle('solo', judges.length === 1);
+      judges.forEach((judge, i) => {
+        const el = make('article', 'seat');
+        el.style.setProperty('--seat', `var(--seat-${(i % 3) + 1})`);
+        el.style.setProperty('--delay', `${-i * 1.7}s`);
+
+        const bubble = make('div', 'bubble');
+        bubble.hidden = true;
+        bubble.setAttribute('aria-live', 'polite');
+        const words = make('p');
+        bubble.appendChild(words);
+
+        const portrait = make('div', 'portrait');
+        portrait.appendChild(make('div', 'spot'));
+        const figure = make('div', 'figure');
+        portrait.appendChild(figure);
+
+        const plate = make('div', 'plate');
+        plate.appendChild(make('h2', '', judge.name));
+        plate.appendChild(make('p', '', judge.character));
+
+        el.append(bubble, portrait, plate);
+        seatsEl.appendChild(el);
+        seats[judge.name] = { el, bubble, words, portrait, figure, index: i };
+        loadPicture(figure, judge);
+      });
+    }
+
     // The judge's picture, from "avatar" in the config file. A judge with no
-    // picture gets a circle with their first letter instead, so a new topic
-    // still looks finished before anybody has drawn its judges.
-    function judgeFace(r) {
-      if (r.avatar) {
-        const img = make('img', 'w-16 h-16 rounded-full bg-slate-100');
-        img.src = r.avatar;
-        img.alt = `Picture of ${r.judge}`;
-        return img;
+    // picture gets avatars/judge.svg, dressed in their seat colour.
+    //
+    // An SVG picture is put straight into the page, not shown with <img>,
+    // because that is the only way the page can reach inside it and move
+    // its head, eyes and mouth. The pictures come from your own avatars
+    // folder, so that is safe. A PNG still works, it just cannot move.
+    async function loadPicture(figure, judge) {
+      const file = judge.avatar || 'avatars/judge.svg';
+      if (!file.endsWith('.svg')) {
+        const img = make('img');
+        img.src = file;
+        img.alt = `Picture of ${judge.name}`;
+        figure.appendChild(img);
+        return;
       }
-      const letter = r.judge.replace(/^the\s+/i, '').charAt(0).toUpperCase();
-      return make('div', 'w-16 h-16 rounded-full bg-sky-100 text-sky-700 font-display text-2xl font-extrabold flex items-center justify-center', letter);
+      try {
+        const res = await fetch(file);
+        if (res.ok) figure.innerHTML = await res.text();
+      } catch {
+        // No picture. The seat still works without one.
+      }
     }
 
-    function judgeCard(r) {
-      const card = make('article', 'bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm flex flex-col');
-      card.appendChild(judgeFace(r));
-      card.appendChild(make('h2', 'mt-3 font-display text-xl font-bold text-slate-900', r.judge));
-      card.appendChild(make('p', 'mt-1 text-xs text-slate-500 leading-relaxed', r.character));
+    // ---------- Voices ----------
+    // The browser can read text out loud. Each seat gets a different pitch
+    // and speed so the judges do not all sound the same. The button at the
+    // top turns the voices off, and the page remembers that choice.
+    const VOICE_STYLES = [
+      { pitch: 0.85, rate: 1.08 },
+      { pitch: 1.0, rate: 0.95 },
+      { pitch: 1.3, rate: 1.1 },
+    ];
+    const canSpeak = 'speechSynthesis' in window;
+    let voicesOn = canSpeak;
+    try { if (localStorage.getItem('voices') === 'off') voicesOn = false; } catch {}
+    const voicesBtn = document.getElementById('voices');
+    voicesBtn.hidden = !canSpeak;
 
-      // A judge who refused shows a dash, not a number. Showing 0 would look
-      // like a terrible score, which is not what happened.
-      const score = make('div', 'mt-4 font-display text-5xl font-extrabold tabular-nums leading-none '
-        + (r.score === null ? 'text-slate-300' : 'text-sky-600'), r.score === null ? '-' : String(r.score));
-      score.appendChild(make('span', 'text-xl text-slate-400', '/10'));
-      card.appendChild(score);
+    function showVoiceButton() {
+      voicesBtn.setAttribute('aria-pressed', String(voicesOn));
+      document.getElementById('voices-label').textContent = voicesOn ? 'Voices on' : 'Voices off';
+      document.getElementById('voices-waves').style.display = voicesOn ? '' : 'none';
+    }
+    voicesBtn.addEventListener('click', () => {
+      voicesOn = !voicesOn;
+      if (!voicesOn && canSpeak) speechSynthesis.cancel();
+      try { localStorage.setItem('voices', voicesOn ? 'on' : 'off'); } catch {}
+      showVoiceButton();
+    });
+    showVoiceButton();
+    if (canSpeak) speechSynthesis.getVoices(); // the browser loads its voices lazily
 
-      card.appendChild(make('p', 'mt-4 pt-4 border-t border-slate-100 text-slate-700 text-sm leading-relaxed flex-1', r.reason));
-      return card;
+    // Things to stop at once if someone presses Skip.
+    let skipping = false;
+    const stopNow = new Set();
+
+    function sayAloud(text, seatIndex) {
+      if (!voicesOn || !canSpeak) return Promise.resolve();
+      return new Promise((resolve) => {
+        const done = () => { stopNow.delete(done); resolve(); };
+        stopNow.add(done);
+        const line = new SpeechSynthesisUtterance(text);
+        const english = speechSynthesis.getVoices().filter((v) => v.lang.startsWith('en'));
+        if (english.length) line.voice = english[(seatIndex * 3) % english.length];
+        const style = VOICE_STYLES[seatIndex % VOICE_STYLES.length];
+        line.pitch = style.pitch;
+        line.rate = style.rate;
+        line.onend = done;
+        line.onerror = done;
+        // Never wait for ever, in case the browser forgets to say it finished.
+        setTimeout(done, 3000 + text.length * 90);
+        speechSynthesis.speak(line);
+      });
     }
 
+    // ---------- Talking ----------
+    // The judge's words appear one at a time in the bubble while the mouth
+    // flaps and the voice reads them out. It finishes when both are done.
+    function speak(seat, text) {
+      seat.bubble.hidden = false;
+      if (skipping) {
+        seat.words.textContent = text;
+        return Promise.resolve();
+      }
+      seat.el.classList.remove('thinking');
+      seat.el.classList.add('talking');
+      stage.classList.add('someone-talking');
+      seat.words.textContent = '';
+
+      const flap = setInterval(() => seat.figure.classList.toggle('mouth-open'), 150);
+      const voice = sayAloud(text, seat.index);
+      const words = text.split(' ');
+      const typed = new Promise((resolve) => {
+        let i = 0;
+        const done = () => { clearInterval(typing); stopNow.delete(done); seat.words.textContent = text; resolve(); };
+        stopNow.add(done);
+        const typing = setInterval(() => {
+          if (i >= words.length) return done();
+          seat.words.textContent += (i ? ' ' : '') + words[i++];
+        }, voicesOn ? 300 : 170);
+      });
+
+      return Promise.all([typed, voice]).then(() => {
+        clearInterval(flap);
+        seat.figure.classList.remove('mouth-open');
+        seat.el.classList.remove('talking');
+        stage.classList.remove('someone-talking');
+        return new Promise((r) => setTimeout(r, skipping ? 0 : 350));
+      });
+    }
+
+    // ---------- Scorecards ----------
+    // After speaking, the judge holds up a card. A judge who did not score
+    // shows a dash and says why, not a 0: a 0 would look like a terrible
+    // score, which is not what happened.
+    function holdUpCard(seat, r) {
+      const card = make('div', 'scorecard');
+      const scored = r.score !== null && r.score !== undefined;
+      card.appendChild(make('span', 'scorecard-num', scored ? String(r.score) : '–'));
+      if (scored) card.appendChild(make('span', 'scorecard-of', '/10'));
+      else card.appendChild(make('span', 'scorecard-note', r.wantsMore ? 'Needs more' : 'No score'));
+      seat.bubble.classList.toggle('no-score', !scored);
+      seat.portrait.appendChild(card);
+      // A quick reaction: a little hop for a high score, a head shake for a low one.
+      if (scored && r.score >= 8) seat.el.classList.add('cheer');
+      if (scored && r.score <= 3) seat.el.classList.add('tut');
+    }
+
+    function clearStage() {
+      for (const seat of Object.values(seats)) {
+        seat.el.classList.remove('talking', 'thinking', 'cheer', 'tut');
+        seat.figure.classList.remove('mouth-open');
+        seat.bubble.hidden = true;
+        seat.bubble.classList.remove('no-score');
+        seat.portrait.querySelector('.scorecard')?.remove();
+      }
+      stage.classList.remove('someone-talking');
+      verdictEl.hidden = true;
+    }
+
+    function thinking() {
+      for (const seat of Object.values(seats)) {
+        seat.el.classList.add('thinking');
+        seat.bubble.hidden = false;
+        seat.words.innerHTML = '<span class="dots"><span></span><span></span><span></span></span>';
+      }
+    }
+
+    // ---------- The verdict ----------
     const METHOD_NAMES = { average: 'Average', strictest: 'Strictest', majority: 'Majority' };
 
-    // The verdict box changes colour to match what happened, so a learner
-    // can tell at a glance whether they got a score, got turned down, or
-    // need to say more. Asking for more is amber, not red: nothing went wrong.
+    // The ticket changes colour to match what happened, so a learner can
+    // tell at a glance whether they got a score, got turned down, or need
+    // to say more. Asking for more is orange, not grey: nothing went wrong.
     const VERDICT_LOOKS = {
-      scored: { label: 'The verdict', colours: 'from-sky-600 to-indigo-600' },
-      refused: { label: 'Turned down', colours: 'from-slate-500 to-slate-700' },
-      more: { label: 'The panel needs more', colours: 'from-amber-500 to-orange-500' },
+      scored: { label: 'The verdict', look: '' },
+      refused: { label: 'Turned down', look: 'refused' },
+      more: { label: 'The panel needs more', look: 'more' },
     };
 
-    function showPanel(data) {
-      const cards = document.getElementById('cards');
-      cards.innerHTML = '';
-      for (const r of data.results) cards.appendChild(judgeCard(r));
-      // When the panel asked for more before any judge looked, there are no
-      // cards to show, only the message.
-      cards.classList.toggle('hidden', data.results.length === 0);
-
-      const look = VERDICT_LOOKS[data.status] || VERDICT_LOOKS.scored;
-      const verdictBox = document.getElementById('verdict');
-      verdictBox.className = verdictBox.className.replace(/from-\S+ to-\S+/, look.colours);
-      verdictBox.classList.toggle('mt-6', data.results.length > 0);
-      document.getElementById('verdict-label').textContent = look.label;
-
+    function showVerdict(data) {
       const v = data.verdict;
+      const look = VERDICT_LOOKS[data.status] || VERDICT_LOOKS.scored;
+      document.getElementById('ticket').className = `ticket ${look.look}`;
+      document.getElementById('verdict-label').textContent = look.label;
       document.getElementById('verdict-method').textContent = METHOD_NAMES[v.method] || v.method;
       document.getElementById('verdict-why').textContent = v.why;
-      document.getElementById('verdict-score').textContent = v.score === null ? '' : v.score;
-      document.getElementById('verdict-score').className = v.score === null ? 'text-3xl' : '';
-      document.getElementById('verdict-out-of').classList.toggle('hidden', v.score === null);
-      show(resultEl);
+      document.getElementById('verdict-number').hidden = v.score === null;
+      verdictEl.hidden = false;
+      countUp(document.getElementById('verdict-score'), v.score);
+      verdictEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+
+    // Counts up to the score, like a scoreboard.
+    function countUp(el, target) {
+      if (target === null) return;
+      const decimals = String(target).includes('.') ? 1 : 0;
+      let step = 0;
+      const tick = () => {
+        step++;
+        el.textContent = (target * step / 20).toFixed(decimals);
+        if (step < 20) setTimeout(tick, 35);
+      };
+      tick();
+    }
+
+    // ---------- The show ----------
+    // The judges speak one at a time, in seat order, and each holds up a
+    // card when they finish. Then the verdict.
+    async function performAnswer(data) {
+      for (const seat of Object.values(seats)) {
+        seat.el.classList.remove('thinking');
+        seat.bubble.hidden = true;
+      }
+      for (const r of data.results) {
+        const seat = seats[r.judge];
+        if (!seat) continue;
+        await speak(seat, r.reason);
+        holdUpCard(seat, r);
+      }
+      // When the panel asked for more before any judge looked, the judge in
+      // the middle seat says so for all of them.
+      if (data.results.length === 0) {
+        const all = Object.values(seats);
+        await speak(all[Math.floor(all.length / 2)], data.verdict.why);
+      }
+      showVerdict(data);
+    }
+
+    skipBtn.addEventListener('click', () => {
+      skipping = true;
+      if (canSpeak) speechSynthesis.cancel();
+      for (const stop of [...stopNow]) stop();
+    });
 
     async function askThePanel() {
       const submission = box.value.trim();
@@ -239,9 +580,15 @@
         return;
       }
 
+      if (canSpeak) speechSynthesis.cancel();
+      skipping = false;
+      showError('');
+      clearStage();
       sendBtn.disabled = true;
       sendBtn.textContent = 'The judges are thinking...';
-      show(thinkingEl);
+      onAir.classList.add('live');
+      thinking();
+      stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       try {
         const res = await fetch('./api/judge', {
@@ -257,19 +604,41 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Something went wrong.');
 
-        // textContent, not innerHTML: whatever the AI writes is shown as
-        // words, and can never be run as code on the page.
-        showPanel(data);
+        sendBtn.textContent = 'The panel is speaking...';
+        skipBtn.hidden = false;
+        await performAnswer(data);
       } catch (err) {
+        clearStage();
         const offline = err instanceof TypeError; // fetch could not reach anything at all
         showError(offline
           ? 'There is no server running behind this page, so there is nobody to ask. Start it with the command in the README.'
           : err.message);
       } finally {
+        skipBtn.hidden = true;
         sendBtn.disabled = false;
-        sendBtn.textContent = 'Ask the panel';
+        sendBtn.textContent = BUTTON_WORDS;
+        onAir.classList.remove('live');
       }
     }
+
+    // Everything about the topic comes from config.json: the name, the
+    // words at the top, even the example in the box, and the judges on the
+    // stage. Switch config file and the whole page changes with it.
+    fetch('./config.json', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((config) => {
+        const title = config.title || config.topic;
+        document.title = title;
+        for (const id of ['brand-title', 'title', 'footer-title']) {
+          document.getElementById(id).textContent = title;
+        }
+        if (config.intro) document.getElementById('intro').textContent = config.intro;
+        if (config.tip) document.getElementById('tip').textContent = config.tip;
+        document.getElementById('submission-label').textContent = config.submission;
+        box.placeholder = config.placeholder || '';
+        buildSeats(config.judges);
+      })
+      .catch(() => { /* the page still works with the plain words already on it */ });
 
     sendBtn.addEventListener('click', askThePanel);
     // Ctrl+Enter (or Cmd+Enter on a Mac) sends it, so a fast typer never has

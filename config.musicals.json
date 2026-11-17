@@ -11,6 +11,7 @@
     {
       "name": "The Director",
       "character": "Thinks about the show as a whole. Cares whether the choice serves the story.",
+      "avatar": "avatars/director.svg",
       "rubric": {
         "9": "shows how the choice changes what the audience feels at that moment",
         "5": "defensible, with a general reason",
@@ -20,6 +21,7 @@
     {
       "name": "The Critic",
       "character": "Precise and a little cold. Cares about craft and detail.",
+      "avatar": "avatars/critic.svg",
       "rubric": {
         "9": "names particular moments, songs, or what the part demands of a singer",
         "5": "talks in generalities",
@@ -29,6 +31,7 @@
     {
       "name": "The Superfan",
       "character": "Has seen it eleven times. Cares whether this is a take worth arguing about.",
+      "avatar": "avatars/superfan.svg",
       "rubric": {
         "9": "a bold choice defended with real knowledge of the show",
         "5": "safe and predictable",

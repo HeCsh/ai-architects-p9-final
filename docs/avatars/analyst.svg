@@ -1,41 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="t">
-  <title id="t">The Analyst: an illustrated analyst with round glasses holding a tablet with a bar chart</title>
-  <circle cx="80" cy="80" r="80" fill="#bae6fd"/>
-  <!-- faint grid -->
-  <path d="M0 40 H160 M0 70 H160 M0 100 H160 M40 0 V160 M120 0 V160" stroke="#7dd3fc" stroke-width="1" opacity=".6"/>
-  <clipPath id="c"><circle cx="80" cy="80" r="80"/></clipPath>
-  <g clip-path="url(#c)">
-    <!-- body: grey cardigan over teal shirt -->
-    <path d="M24 160 C26 124 48 110 80 108 C112 110 134 124 136 160 Z" fill="#64748b"/>
-    <path d="M68 109 L80 126 L92 109 Z" fill="#0f766e"/>
-    <circle cx="80" cy="134" r="2" fill="#334155"/><circle cx="80" cy="146" r="2" fill="#334155"/>
-    <!-- neck and head -->
-    <rect x="71" y="92" width="18" height="20" rx="6" fill="#8d5a3b"/>
-    <ellipse cx="80" cy="70" rx="26" ry="30" fill="#a26a45"/>
-    <ellipse cx="54" cy="72" rx="5" ry="7" fill="#8d5a3b"/>
-    <ellipse cx="106" cy="72" rx="5" ry="7" fill="#8d5a3b"/>
-    <!-- neat short hair with a side part -->
-    <path d="M53 66 C50 38 68 32 82 32 C98 32 110 42 107 66 C104 54 100 48 94 46 C84 50 68 50 58 50 C55 54 54 60 53 66 Z" fill="#111827"/>
-    <path d="M68 40 L74 48" stroke="#374151" stroke-width="2"/>
-    <!-- round glasses -->
-    <circle cx="69" cy="68" r="9" fill="#e0f2fe" fill-opacity=".35" stroke="#1f2937" stroke-width="2.5"/>
-    <circle cx="92" cy="68" r="9" fill="#e0f2fe" fill-opacity=".35" stroke="#1f2937" stroke-width="2.5"/>
-    <path d="M78 68 H83" stroke="#1f2937" stroke-width="2.5"/>
-    <circle cx="69" cy="68" r="2.6" fill="#1f2937"/>
-    <circle cx="92" cy="68" r="2.6" fill="#1f2937"/>
-    <!-- one raised, sceptical eyebrow; flat mouth -->
-    <path d="M61 55 H76" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
-    <path d="M85 54 Q92 50 99 53" stroke="#111827" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M73 87 H88" stroke="#5b2f1a" stroke-width="3" stroke-linecap="round"/>
-    <!-- tablet with bar chart -->
-    <g transform="rotate(-8 112 128)">
-      <rect x="92" y="108" width="44" height="34" rx="4" fill="#1e293b"/>
-      <rect x="96" y="112" width="36" height="26" rx="2" fill="#f8fafc"/>
-      <rect x="100" y="126" width="5" height="9" fill="#0ea5e9"/>
-      <rect x="108" y="120" width="5" height="15" fill="#0ea5e9"/>
-      <rect x="116" y="123" width="5" height="12" fill="#0ea5e9"/>
-      <rect x="124" y="115" width="5" height="20" fill="#0284c7"/>
-    </g>
-    <ellipse cx="96" cy="140" rx="9" ry="7" fill="#a26a45"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="The Analyst: a stats-minded analyst with round glasses and a tablet">
+  <!-- Built from the shared judge rig. The page moves the parts named av-body, av-head and av-eyes,
+       and swaps av-mouth-closed for av-mouth-open while the judge talks. -->
+  <style>.av-mouth-open{display:none}</style>
+  <g class="av-body"><rect x="88" y="110" width="24" height="32" rx="9" fill="#895a3a"/><path d="M28 200 C30 158 62 140 100 138 C138 140 170 158 172 200 Z" fill="#64748b"/><path d="M88 139 L100 160 L112 139 Z" fill="#0f766e"/><circle cx="100" cy="170" r="2.2" fill="#334155"/><circle cx="100" cy="184" r="2.2" fill="#334155"/></g>
+  <g class="av-head"><ellipse cx="68" cy="88" rx="5.5" ry="8" fill="#895a3a"/><ellipse cx="132" cy="88" rx="5.5" ry="8" fill="#895a3a"/><ellipse cx="100" cy="84" rx="32" ry="36" fill="#a26a45"/><path d="M99 89 Q96 96 101 97" stroke="#714a30" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M67 80 C63 50 82 43 100 43 C121 43 137 54 133 80 C131 68 127 61 121 58 C108 62 88 62 74 60 C70 65 68 72 67 80 Z" fill="#111827"/><path d="M84 46 L90 58" stroke="#3b4252" stroke-width="2" stroke-linecap="round"/><g class="av-eyes"><circle cx="89" cy="84" r="4.4" fill="#1f2430"/><circle cx="90.5" cy="82.5" r="1.4" fill="#fff"/><circle cx="111" cy="84" r="4.4" fill="#1f2430"/><circle cx="112.5" cy="82.5" r="1.4" fill="#fff"/></g><path class="av-brows" d="M80 72 H96 M104 70 Q112 66 120 70" stroke="#111827" stroke-width="3.4" fill="none" stroke-linecap="round"/><g class="av-mouth-closed"><path d="M92 105 H108" stroke="#5b2f1a" stroke-width="3" stroke-linecap="round"/></g><g class="av-mouth-open"><ellipse cx="100" cy="106" rx="8" ry="7.5" fill="#6b1d1d"/><ellipse cx="100" cy="110" rx="5" ry="3" fill="#f87171"/><path d="M93 101.5 H107" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></g><g fill="#ffffff" fill-opacity=".18" stroke="#1f2430" stroke-width="2.6"><circle cx="89" cy="84" r="10"/><circle cx="111" cy="84" r="10"/></g><path d="M99 84 H101 M79 82 L68 80 M121 82 L132 80" stroke="#1f2430" stroke-width="2.6"/></g>
+  <g class="av-prop"><g transform="rotate(-8 140 172)"><rect x="118" y="152" width="46" height="36" rx="5" fill="#1e293b"/><rect x="122" y="156" width="38" height="28" rx="2" fill="#f8fafc"/><rect x="126" y="171" width="6" height="10" fill="#0ea5e9"/><rect x="135" y="164" width="6" height="17" fill="#0ea5e9"/><rect x="144" y="168" width="6" height="13" fill="#0ea5e9"/><rect x="153" y="159" width="5" height="22" fill="#0284c7"/></g><ellipse cx="122" cy="186" rx="12" ry="10" fill="#a26a45"/></g>
 </svg>

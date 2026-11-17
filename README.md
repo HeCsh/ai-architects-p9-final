@@ -21,11 +21,11 @@ Use this repo as the starting point for Project 9, or as the catch-up checkpoint
 
 | File | What it does |
 | --- | --- |
-| `index.html` | The web page. A box, a button, three judge cards and the verdict. Every word about the topic is filled in from the config file. |
+| `index.html` | The web page. A box, a button, a stage where three judges talk and hold up their scores, and the verdict. Every word about the topic is filled in from the config file. |
 | `config.json` | The soccer topic: its name, the words on the page, what gets sent in, the verdict method, and the three judges. |
 | `config.musicals.json` | The musicals topic. Same shape as soccer, different everything. |
 | `config.inventions.json` | The inventions topic. A different shape: the submission is made up, not chosen. |
-| `avatars/` | Pictures of the soccer judges. Add your own judges' pictures here. |
+| `avatars/` | The judges' pictures, with moving parts. Add your own judges' pictures here. |
 | `scripts/server.mjs` | The server. Hands out the page, and passes each submission to the panel. |
 | `scripts/panel.mjs` | The panel. Catches awkward input, asks every judge at the same time, then works out the verdict. |
 | `scripts/judge.mjs` | One judge. Turns a judge from the config file into instructions for the AI, adds the three rules and the topic's shape, and reads the score out of the answer. |
@@ -98,12 +98,23 @@ Leave the file name off and you get `config.json`, which is soccer.
 
 ### Give your judges faces
 
-Each judge can have a picture on their card.
+Your judges sit on a stage. They blink, breathe and look around, and when they answer, their mouths move and the browser reads their words out loud (the **Voices** button at the top turns that off).
 
-1. Put the picture in the `avatars` folder. It must be a `.svg` or `.png`, and its name may only use small letters, numbers and dashes, like `the-critic.png`.
-2. Add `"avatar": "avatars/the-critic.png"` to that judge in your config file.
+1. Put the picture in the `avatars` folder. Its name may only use small letters, numbers and dashes, like `the-critic.svg`.
+2. Add `"avatar": "avatars/the-critic.svg"` to that judge in your config file.
 
-Draw it, or make it with an image tool. **Never use a photo of a real person.** Your panel goes on the internet, and your judges have strong opinions, so they need to be characters, not people. A judge with no picture gets a circle with their first letter, which is fine too.
+**To make it move, it has to be an SVG with named parts.** The easiest way: copy one of the pictures already in `avatars` and change its colours. The page looks for these names inside the picture:
+
+| Part | What the page does with it |
+| --- | --- |
+| `av-body` | Breathes |
+| `av-head` | Sways, and bobs while talking |
+| `av-eyes` | Blinks, and looks around while thinking |
+| `av-mouth-closed` and `av-mouth-open` | Swaps between the two while talking |
+
+A `.png` works too, but it stays still. A judge with no picture at all gets `avatars/judge.svg`, dressed in their seat colour.
+
+Draw it, or make it with an image tool. **Never use a photo of a real person.** Your panel goes on the internet, and your judges have strong opinions, so they need to be characters, not people.
 
 ## Write your own rubrics
 

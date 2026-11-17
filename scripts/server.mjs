@@ -91,6 +91,19 @@ const server = createServer(async (req, res) => {
     return send(res, 200, page.type, await readFile(page.file));
   }
 
+  // The judges' pictures. Only pictures, and only from the avatars folder:
+  // the name may only use letters, numbers and dashes, so nobody can ask
+  // for ../.env or any other file by sneaking a path into the name.
+  const picture = path.match(/^\/avatars\/([a-z0-9-]+)\.(svg|png)$/);
+  if (req.method === 'GET' && picture) {
+    const type = picture[2] === 'svg' ? 'image/svg+xml' : 'image/png';
+    try {
+      return send(res, 200, type, await readFile(`avatars/${picture[1]}.${picture[2]}`));
+    } catch {
+      // No such picture. Fall through to Not found.
+    }
+  }
+
   send(res, 404, 'text/plain; charset=utf-8', 'Not found');
 });
 

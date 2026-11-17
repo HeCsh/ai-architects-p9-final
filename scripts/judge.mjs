@@ -126,5 +126,5 @@ export function readAnswer(text) {
 
 export async function judgeIt(config, judge, submission) {
   const answer = await askAI(buildPrompt(config, judge, submission));
-  return { judge: judge.name, character: judge.character, ...readAnswer(answer) };
+  return { judge: judge.name, character: judge.character, avatar: judge.avatar, ...readAnswer(answer) };
 }

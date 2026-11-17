@@ -167,9 +167,24 @@
       return el;
     }
 
+    // The judge's picture, from "avatar" in the config file. A judge with no
+    // picture gets a circle with their first letter instead, so a new topic
+    // still looks finished before anybody has drawn its judges.
+    function judgeFace(r) {
+      if (r.avatar) {
+        const img = make('img', 'w-16 h-16 rounded-full bg-slate-100');
+        img.src = r.avatar;
+        img.alt = `Picture of ${r.judge}`;
+        return img;
+      }
+      const letter = r.judge.replace(/^the\s+/i, '').charAt(0).toUpperCase();
+      return make('div', 'w-16 h-16 rounded-full bg-sky-100 text-sky-700 font-display text-2xl font-extrabold flex items-center justify-center', letter);
+    }
+
     function judgeCard(r) {
       const card = make('article', 'bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm flex flex-col');
-      card.appendChild(make('h2', 'font-display text-xl font-bold text-slate-900', r.judge));
+      card.appendChild(judgeFace(r));
+      card.appendChild(make('h2', 'mt-3 font-display text-xl font-bold text-slate-900', r.judge));
       card.appendChild(make('p', 'mt-1 text-xs text-slate-500 leading-relaxed', r.character));
 
       // A judge who refused shows a dash, not a number. Showing 0 would look
